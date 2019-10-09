@@ -1,0 +1,32 @@
+<div id="header">
+
+	<div id="header_title">
+		<img id="logo" src="{{ App():Url() + '/images/harbour_logo.png' }}" >
+
+		<span>SEAMAP SITE </span>
+		
+	</div>			
+	
+	<input type="button" id="btn_logout" class="mybtn mybtn_logout" value="Logout">		
+	
+</div>
+
+<script>
+
+	$('#btn_logout' ).click( Logout )
+	
+	function Logout() {
+	
+		if ( !confirm( 'Logout ?' )) 
+			return null
+
+		var o = new Object()
+			o[ 'action' ] 	= 'logout'
+		
+		$.post( '{{ Route( 'autenticate' ) }}', o )
+			.done( function( data ) { 					
+				 window.location.replace( '{{ Route( 'autenticate' ) }}' );
+			})
+	}
+
+</script>

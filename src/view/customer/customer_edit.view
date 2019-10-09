@@ -1,0 +1,117 @@
+<html>
+
+	{{ View( 'default/default_head.view' ) }}
+	{{ Css( 'default.css' ) }}
+	
+      <body>
+	  
+		{{ View( 'default/header_main.view' ) }}						
+		
+		<div id="content">				
+	
+			<?prg
+				LOCAL hData 	:= PValue(1)
+				LOCAL cHtml		:= ''
+
+				IF HB_HHasKey( hData, 'error' )	
+					cHtml := '<div class="error_edit"><strong>Error</strong><br>' + hData[ 'error' ] + '</div>'				
+				ENDIF
+				
+				RETU cHtml
+			?>				
+	  
+			<form method="POST" action="{{ Route( 'customer' ) }}"  >	
+
+				<table style="width:100%">			
+					
+					<tr>
+						<th width="150px">FieldName</th>
+						<th>Value</th>
+					</tr>
+					
+					<?prg 
+						LOCAL hData 	:= PValue(1)															
+						LOCAL cHtml 	:= ''
+						LOCAL n, aItem, nPos, aInfo
+						LOCAL cField, uValue, cType
+						LOCAL cSet
+				
+						 
+						for n = 1 to Len( hData[ "values" ] )						
+						
+							aItem 	:= HB_HPairAt( hData[ 'values' ], n )
+
+							cField 	:= aItem[1]
+							uValue 	:= aItem[2]							
+							
+							//	Buscamos el campo en la estructura 
+								
+								nPos := Ascan( hData[ 'struct' ], {|aStr| upper(aStr[1]) == upper(cField) } )
+							
+							//	Recuperamos Info del campo
+							
+								aInfo := hData[ 'struct' ][nPos]
+							
+							//																													
+						
+							cHtml += "<tr>" + CRLF
+							cHtml += "<td>" + cField + "</td>" + CRLF
+						  
+							IF aItem[1] == 'ID'
+								cHtml += "<td class='myinput' ><strong>" + valtochar( uValue ) + "</strong></td>" + CRLF
+							ELSE
+
+								cType 	:= aInfo[2]
+								nLen	:= aInfo[3]
+							
+								DO CASE
+									CASE cType = 'C'																				
+										cHtml += "<td class='myinput' ><input name='" + cField + "' type='text' value='" + valtochar( uValue ) + "' size='" + ltrim(str(nLen)) + "' class='get'></td>" + CRLF
+									CASE cType = 'N'																				
+										cHtml += "<td class='myinput' ><input name='" + cField + "' type='number' value='" + valtochar( uValue ) + "' size='" + ltrim(str(nLen)) + "'></td>" + CRLF										
+									CASE cType = 'D'
+									
+										IF Valtype( uValue ) == 'D'
+											cSet 	:= Set( 4, 'YYYY-MM-DD' )
+											uValue 	:= DTOC( uValue )										
+											cSet 	:= Set( 4, cSet )
+										ENDIF
+										
+										cHtml += "<td class='myinput' ><input name='" + cField + "' type='date' value='" + uValue + "' size='" + ltrim(str(nLen)) + "'></td>" + CRLF												
+									CASE cType = 'L'																				
+										cHtml += "<td class='myinput' >"
+										cHtml += "<select name='" + cField + "'>"
+										cHtml += "<option value='yes'>Yes</option>"
+										cHtml += "<option value='no'>No</option>"										
+										cHtml += "</select>"
+										cHtml += "</td>" + CRLF 
+									ENDCASE 
+							ENDIF
+						  
+							cHtml += "</tr>" + CRLF
+						next								
+						
+						RETU cHtml																
+					?>
+					
+				</table>
+
+				<?prg 
+					LOCAL hData := PValue(1)
+					LOCAL cHtml := ''
+					
+					cHtml += "<br>"
+					cHtml += "<input type='text' name='ID' value='" + hData[ "id" ] + "' hidden>"
+					cHtml += "<input type='submit' name ='action' class='mybtn mybtn_edit' value='Save'>"
+					cHtml += "<input type='submit' name ='action' class='mybtn mybtn_edit' value='Cancel'>"					
+					
+					RETU cHtml																
+				?>			
+				
+			</form>
+
+		</div>		
+
+	  </body>	  	  	  
+	  
+</html>

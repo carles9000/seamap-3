@@ -1,0 +1,51 @@
+<html>
+
+	{{ View( 'default/default_head.view' ) }}
+	{{ Css( 'login.css' ) }}
+		
+      <body>
+
+		<div id="content_login">
+		
+			<img id="logo" src="{{ App():Url() + '/images/harbour_logo_login.png' }}" >
+			
+			<h3>Seamap</h3>
+			
+			<p>User name</p> <input id='user' type='text' 	   class="input_login" value='' placeholder='User name... (demo)'>
+			<br>
+			<p>Passsword</p> <input id='psw'  type='password' class="input_login" value='' placeholder='Password... (1234)'>				
+			<br>
+		
+			<button type='submit' id='btn_login' class="ctrl_login btn_login" >Login</button><br><br>				
+		
+		</div>
+		
+	  </body>
+	  
+	  <script>
+	  
+			$('#btn_login' ).click( Validate )
+			
+			function Validate() {
+	
+				var o = new Object()
+					o[ 'action' ] 	= 'login'
+					o[ 'user' ] 	= $( '#user' ).val()
+					o[ 'psw' ] 		= $( '#psw' ).val()
+				
+				$.post( '{{ Route( 'autenticate' ) }}', o )
+					.done( function( data ) { 
+						if ( data.success ) 
+							window.location.href = '{{ Route( 'customer' ) }}'
+						else
+							alert( 'Error autenticate' )
+					})
+			}
+
+			$("input").keyup(function(event) {
+				if (event.keyCode === 13) {	Validate();}
+			}); 
+	  
+	  </script>	  	  
+	  
+</html>

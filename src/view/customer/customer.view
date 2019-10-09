@@ -1,0 +1,122 @@
+<html>
+
+	{{ View( 'default/default_head.view' ) }}
+	{{ Css( 'default.css' ) }}
+	{{ Css( 'browse.css' ) }}
+
+      <body>
+	 
+		{{ View( 'default/header_main.view' ) }}	 
+
+		<div id="content">
+	
+			<form method="POST" action="{{ Route( 'customer' ) }}"  >	
+			
+				<button type='submit' name='action' class="mybtn mybtn_add" value='add' >Add</button><br><br>
+				
+				<table id="mytable">
+				
+					<?prg
+						LOCAL hData 	:= PValue(1)
+						LOCAL cHtml 	:= '<thead><tr>'
+						
+						FOR n := 1 TO len( hData[ 'headers' ] )
+							cHtml += "<th>" + hData[ "headers" ][ n ] + "</th>"
+						NEXT
+						
+						
+						cHtml += "<th width='75px'>Actions</th>"
+						
+						cHtml += "</thead>"
+						
+						cHtml += "<tbody>"
+						
+					   for n = 1 to Len( hData[ "rows" ] )
+					   
+						  cHtml += "<tr>" + CRLF
+						  
+						  for nRow = 1 to Len( hData[ "rows" ][ n ] )
+							 cHtml += "<td>" + valtochar( hData[ "rows" ][ n ][ nRow ] ) + "</td>" + CRLF
+						  next   
+						  
+						  cHtml += "<td>"
+						  
+						  cHtml += '<form method="POST" action="{{ Route( 'customer' ) }}"  >'
+						  
+						  cHtml += '<button type="submit" name="action" value="edit" class="btn_grid">'
+						  cHtml += '   <span class="glyphicon glyphicon-pencil"></span>'
+						  cHtml += "</button>"
+						 
+						  cHtml += '<button type="submit" name="action" value="del" class="btn_grid" onclick="return Confirma();" >'
+						  cHtml += '   <span class="glyphicon glyphicon-trash"></span>'
+						  cHtml += "</button>"
+						  
+						  cHtml += '<input type="hidden" name="id" value="' + valtochar( hData[ "rows" ][ n ][ 1 ] ) + '" />'					  
+						  
+						  cHtml += '</form>'
+						  
+						  cHtml += "</td>"
+						  cHtml += "</tr>" + CRLF
+					   next												
+					   
+						cHtml += "</tbody>"
+					  
+					   return cHtml
+					?>
+					
+				</table>
+				
+				<div class="browse_nav">
+					<button type='button' id="btn_info" class="browse_btn browse_btn_left">Info</button>
+					<button type='submit' name='action' class="browse_btn" value='last' >Last</button>	
+					<button type='submit' name='action' class="browse_btn" value='next' >Next</button>	
+					<button type='submit' name='action' class="browse_btn" value='prev' >Prev</button>	
+					<button type='submit' name='action' class="browse_btn" value='first' >First</button>	
+					<input type="hidden" name="page" value="{{ PARAM 2, 'page' }}" >
+					<input type="hidden" name="rows" value="{{ PARAM 2, 'rows' }}" >
+				</div>
+				
+			</form>
+			
+		
+		</div>
+
+		<div id="count"><h5>{{ App():Get( 'count' ) }}</h5></div>
+		
+	  </body>
+	  
+	  <div class="modal"></div>
+	  
+	  <script>						
+			
+			$('#btn_info').click( function() { 
+			
+				var o = new Object()
+					o[ 'action' ] = 'info'									 
+			
+				$.post( '{{ Route( 'customer' ) }}', o )
+					.done( function( dat ) { alert( dat.name + '\n' + dat.provider ) })					
+			});	  
+	  
+			function Confirma() { return confirm( 'Delete ?' ) }
+
+			//	----------------------------------------
+			
+			$body = $("body");	
+			
+			$(document).ready(function() { 
+			
+				$(document).ajaxStart(function() { $body.addClass("loading"); });
+				
+				$(document).ajaxStop(function() { $body.removeClass("loading");	});
+				
+				$("form").submit(function(){ $body.addClass("loading");	});
+				
+			});				
+			
+	  </script>
+	  
+	  
+	  
+	  
+</html>
